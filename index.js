@@ -509,7 +509,234 @@ console.log(
 
 function daysInBetween(date1, date2) {
   let Difference_In_Time = date1.getTime() - date2.getTime();
-  return Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+  return (Difference_In_Days = Math.round(
+    Difference_In_Time / (1000 * 3600 * 24)
+  ));
 }
 
-console.log(daysInBetween(today,myBirthdayDate))
+console.log(daysInBetween(today, myBirthdayDate));
+
+//Module 3 Advanced Q1
+function makeCounter(startFrom, incrementBy) {
+  let currentCount = startFrom;
+  return function () {
+    currentCount += incrementBy;
+    console.log(currentCount);
+    return currentCount;
+  };
+}
+// let counter1 = makeCounter();
+// counter1(); // 1
+// counter1(); // 2
+// let counter2 = makeCounter();
+// counter2(); // 1. Yes it is independent
+let counter3 = makeCounter(5, 2);
+counter3();
+
+//Module 3 Advanced Q2
+// function delayMsg(msg) {
+//   console.log(`This message will be printed after a delay: ${msg}`);
+// }
+const delayMsg = (msg) => {
+  console.log(`This message will be printed after a delay: ${msg}`);
+};
+setTimeout(delayMsg, 100, "#1: Delayed by 100ms"); //4th
+setTimeout(delayMsg, 20, "#2: Delayed by 20ms"); //3rd
+setTimeout(delayMsg, 0, "#3: Delayed by 0ms"); //2nd
+delayMsg("#4: Not delayed at all"); //1st
+clearTimeout(setTimeout(delayMsg, 10000, "#5: Delayed by 10s"));
+
+//Module 3 Advanced Q3
+function printMe(msg) {
+  console.log("printing debounced message", msg);
+}
+printMe = debounce(printMe, 1000); //create this debounce function for a)
+//fire off 3 calls to printMe within 300ms - only the LAST one should print, after
+//1000ms of no calls
+// setTimeout(printMe, 100);
+// setTimeout(printMe, 200);
+// setTimeout(printMe, 300);
+setTimeout(function () {
+  printMe("hello");
+}, 100);
+setTimeout(function () {
+  printMe("hello");
+}, 200);
+setTimeout(function () {
+  printMe("hello");
+}, 300);
+
+function debounce(func, ms) {
+  let timer;
+  const timeout = ms;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
+
+//Module 3 Advanced Q4
+let fibonacciSequence = [];
+function printFibonacci() {
+  if (fibonacciSequence.length === 0 || fibonacciSequence.length === 1) {
+    fibonacciSequence.push(1);
+  } else {
+    fibonacciSequence.push(
+      fibonacciSequence[fibonacciSequence.length - 2] +
+        fibonacciSequence[fibonacciSequence.length - 1]
+    );
+  }
+  console.log(fibonacciSequence);
+}
+
+// setInterval(printFibonacci, 1000);
+
+function printFibonacciTimeouts(limit) {
+  if (fibonacciSequence.length === 0 || fibonacciSequence.length === 1) {
+    fibonacciSequence.push(1);
+  } else {
+    fibonacciSequence.push(
+      fibonacciSequence[fibonacciSequence.length - 2] +
+        fibonacciSequence[fibonacciSequence.length - 1]
+    );
+  }
+  console.log(fibonacciSequence);
+  if (fibonacciSequence.length < limit) {
+    setTimeout(function () {
+      printFibonacciTimeouts(5);
+    }, 1000);
+  }
+}
+
+// setTimeout(function () {
+//   printFibonacciTimeouts(5);
+// }, 1000);
+
+//Module 3 Advanced Q5
+let car = {
+  make: "Porsche",
+  model: "911",
+  year: 1964,
+  description() {
+    console.log(`This car is a ${this.make} ${this.model} from ${this.year}`);
+  },
+};
+car.description(); //works
+// setTimeout(car.description, 200); //fails. car.description is referring to the function in car. The function itself does not
+//contain the attributes of car due to it being a reference, hence it prints undefined.
+// setTimeout(function(){car.description()}, 200);
+setTimeout(car.description.bind(car), 200);
+
+car = { ...car };
+car.year = 2000;
+
+//Module 3 Advanced Q6
+function multiply(a, b) {
+  console.log(a * b);
+}
+
+multiply.delay = function (ms) {
+  console.log(ms);
+};
+
+// console.log(multiply.prototype);
+// console.log(multiply.prototype.delay);
+// multiply.delay(500)(5, 5); // prints 25 after 500 milliseconds
+
+//Module 3 Advanced Q7
+function Person(name, age, gender) {
+  this.name = name;
+  this.age = age;
+  this.gender = gender;
+}
+
+const person1 = new Person("James Brown", 73, "male");
+console.log("person1: " + person1); //prints person1: [object Object]
+
+Person.prototype.toString = function personToString() {
+  return `${this.name}`;
+};
+const person2 = new Person("Brown James", 37, "female");
+const person3 = new Person("Tabby Tom", 40, "male");
+console.log("person2: " + person2.toString());
+
+function Student(name, age, gender, cohort) {
+  Person.call(this, name, age, gender);
+  this.cohort = "B6";
+}
+
+Student.prototype.toString = function studentToString() {
+  return `${this.name}`;
+};
+const student1 = new Student("Brown James", 37, "female");
+const student2 = new Student("Tabby Tom", 40, "male");
+console.log("student1: " + student1.toString());
+
+//Module 3 Advanced Q8
+class DigitalClock {
+  constructor(prefix) {
+    this.prefix = prefix;
+  }
+  display() {
+    let date = new Date();
+    //create 3 variables in one go using array destructuring
+    let [hours, mins, secs] = [
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+    ];
+    if (hours < 10) hours = "0" + hours;
+    if (mins < 10) mins = "0" + mins;
+    if (secs < 10) secs = "0" + secs;
+    console.log(`${this.prefix} ${hours}:${mins}:${secs}`);
+  }
+  stop() {
+    clearInterval(this.timer);
+  }
+  start() {
+    this.display();
+    this.timer = setInterval(() => this.display(), 1000);
+  }
+}
+const myClock = new DigitalClock("my clock:");
+myClock.start();
+
+class PrecisionClock extends DigitalClock {
+  constructor(precision = 1) {
+    this.precision = precision;
+  }
+}
+
+class AlarmClock extends DigitalClock {
+  constructor(wakeupTime = "07:00") {
+    this.wakeupTime = wakeupTime;
+  }
+  display() {
+    let date = new Date();
+    //create 3 variables in one go using array destructuring
+    let [hours, mins, secs] = [
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+    ];
+    if (hours < 10) hours = "0" + hours;
+    if (mins < 10) mins = "0" + mins;
+    if (secs < 10) secs = "0" + secs;
+    console.log(`${this.prefix} ${hours}:${mins}:${secs}`);
+    let alarmTime = this.wakeupTime.split(":");
+    if (hours === alarmTime[0] && mins === alarmTime[1]) {
+      console.log("Wake Up");
+      this.stop();
+    }
+  }
+}
+
+//Module 3 Advanced Q9
+function randomDelay() {
+  // your code
+}
+randomDelay().then(() => console.log("There appears to have been a delay."));
+
+//Module 3 Advanced Q10
