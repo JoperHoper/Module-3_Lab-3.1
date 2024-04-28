@@ -637,13 +637,17 @@ function multiply(a, b) {
   console.log(a * b);
 }
 
-multiply.delay = function (ms) {
-  console.log(ms);
+multiply.prototype.delay = function (ms) {
+  return function (a, b) {
+    setTimeout(function () {
+      console.log(a * b);
+    }, ms);
+  };
 };
 
-// console.log(multiply.prototype);
-// console.log(multiply.prototype.delay);
-// multiply.delay(500)(5, 5); // prints 25 after 500 milliseconds
+multiply = new multiply(5, 5);
+
+multiply.delay(500)(5, 5); // prints 25 after 500 milliseconds
 
 //Module 3 Advanced Q7
 function Person(name, age, gender) {
@@ -700,8 +704,8 @@ class DigitalClock {
     this.timer = setInterval(() => this.display(), 1000);
   }
 }
-const myClock = new DigitalClock("my clock:");
-myClock.start();
+// const myClock = new DigitalClock("my clock:");
+// myClock.start();
 
 class PrecisionClock extends DigitalClock {
   constructor(precision = 1) {
@@ -736,7 +740,19 @@ class AlarmClock extends DigitalClock {
 //Module 3 Advanced Q9
 function randomDelay() {
   // your code
+  let delay = (Math.floor(Math.random() * 20) + 1) * 1000;
+  return new Promise(function (myResolve, myReject) {
+    setTimeout(function () {
+      if ((delay / 1000) % 2 === 0) {
+        myResolve(delay);
+      } else {
+        myReject(delay);
+      }
+    }, delay);
+  });
 }
-randomDelay().then(() => console.log("There appears to have been a delay."));
-
-//Module 3 Advanced Q10
+randomDelay()
+  .then((delay) =>
+    console.log("There appears to have been a delay." + delay / 1000)
+  )
+  .catch((delay) => console.log("There's an error." + delay / 1000));
